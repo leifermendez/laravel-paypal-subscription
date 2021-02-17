@@ -1,7 +1,7 @@
 {
     "name": "leifermendez/laravel-paypal-subscription",
     "description": "Plugin especial para laravel el cual permite de forma facil el cobro de subscripcion con PAYPAL",
-    "license": "Apache",
+    "license": "Apache-2.0",
     "authors": [
         {
             "name": "Leifer Mendez",
@@ -9,6 +9,7 @@
         }
     ],
     "require": {
+        "php": ">=7.2",
         "anlutro/curl": "^1.4"
     },
     "autoload": {

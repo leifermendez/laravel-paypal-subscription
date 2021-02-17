@@ -15,7 +15,7 @@ $pp = new PaypalSubscription($app_id, $app_sk);
 
 /**
  * For more detail about
- * https://developer.paypal.com/docs/api/subscriptions/v1/#subscriptions_activate
+ * https://developer.paypal.com/docs/api/subscriptions/v1/#subscriptions
  */
 
 $id_subscription = 'I-25E9NV7WG2G3';

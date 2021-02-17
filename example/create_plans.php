@@ -17,7 +17,7 @@ $pp = new PaypalSubscription($app_id, $app_sk);
 
 /**
  * For more detail about
- * https://developer.paypal.com/docs/api/catalog-products/v1/#products_create
+ * https://developer.paypal.com/docs/api/subscriptions/v1/#plans
  */
 
 

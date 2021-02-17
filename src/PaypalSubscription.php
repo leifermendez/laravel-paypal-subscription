@@ -13,16 +13,18 @@ use Exception;
  */
 class PaypalSubscription extends cURL
 {
-    private $endpoint = 'https://api-m.sandbox.paypal.com/v1';
+    private $endpoint;
     private $app_id;
     private $app_sk;
+    private $mode;
     private $headers;
     private $helper;
     private $token;
 
-    public function __construct($app_id, $app_sk)
+    public function __construct($app_id, $app_sk, $mode = 'test')
     {
         try {
+            $this->endpoint = ($mode === 'test') ? 'https://api-m.sandbox.paypal.com/v1' : 'https://api-m.paypal.com/v1';
             $this->helper = new Helper();
             $this->app_id = $app_id;
             $this->app_sk = $app_sk;
@@ -201,7 +203,7 @@ class PaypalSubscription extends cURL
     {
         try {
 
-            $url = $this->endpoint . '/billing/subscriptions/'.$id.'/activate';
+            $url = $this->endpoint . '/billing/subscriptions/' . $id . '/activate';
             $request = cURL::newRequest('post', $url)
                 ->setHeader('Content-Type', 'application/json')
                 ->setHeader('Authorization', 'Bearer ' . $this->token);
@@ -225,7 +227,7 @@ class PaypalSubscription extends cURL
     {
         try {
 
-            $url = $this->endpoint . '/billing/subscriptions/'.$id.'/cancel';
+            $url = $this->endpoint . '/billing/subscriptions/' . $id . '/cancel';
             $request = cURL::newRequest('post', $url)
                 ->setHeader('Content-Type', 'application/json')
                 ->setHeader('Authorization', 'Bearer ' . $this->token);
@@ -249,7 +251,7 @@ class PaypalSubscription extends cURL
     {
         try {
 
-            $url = $this->endpoint . '/billing/subscriptions/'.$id.'/suspend';
+            $url = $this->endpoint . '/billing/subscriptions/' . $id . '/suspend';
             $request = cURL::newRequest('post', $url)
                 ->setHeader('Content-Type', 'application/json')
                 ->setHeader('Authorization', 'Bearer ' . $this->token);
@@ -272,7 +274,7 @@ class PaypalSubscription extends cURL
     {
         try {
 
-            $url = $this->endpoint . '/billing/subscriptions/'.$id;
+            $url = $this->endpoint . '/billing/subscriptions/' . $id;
 
             $request = cURL::newRequest('get', $url)
                 ->setHeader('Content-Type', 'application/json')

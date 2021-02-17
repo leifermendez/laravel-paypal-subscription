@@ -1,6 +1,6 @@
 <?php
 
-namespace leifermendez\stripe;
+namespace leifermendez\paypal;
 
 use Illuminate\Support\Facades\Facade;
 

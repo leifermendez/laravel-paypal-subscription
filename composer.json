@@ -21,10 +21,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Barryvdh\\Debugbar\\ServiceProvider"
+                "\\leifermendez\\paypal\\ProviderPaypalSubscription"
             ],
             "aliases": {
-                "Debugbar": "Barryvdh\\Debugbar\\Facade"
+                "PapyalSubscription": "\\leifermendez\\paypal\\PapyalSubscriptionFacade"
             }
         }
     }

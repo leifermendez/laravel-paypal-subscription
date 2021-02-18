@@ -72,7 +72,7 @@ class PaypalSubscription
      * @return string
      */
 
-    public function getProduct()
+    public static function getProduct()
     {
         try {
 
@@ -96,7 +96,7 @@ class PaypalSubscription
      * @param array $data
      * @return mixed|string
      */
-    public function createProduct($data = [])
+    public static function createProduct($data = [])
     {
         try {
             if (empty($data)) {
@@ -123,13 +123,13 @@ class PaypalSubscription
      * @return mixed|string
      */
 
-    public function getPlans()
+    public static function getPlans()
     {
         try {
 
             $url = self::$endpoint . '/billing/plans';
 
-            $request =self::$curl->newRequest('get', $url)
+            $request = self::$curl->newRequest('get', $url)
                 ->setHeader('Content-Type', 'application/json')
                 ->setHeader('Authorization', 'Bearer ' . self::$token);
 
@@ -149,7 +149,7 @@ class PaypalSubscription
      * @return mixed|string
      */
 
-    public function createPlan($data = [], $product = [])
+    public static function createPlan($data = [], $product = [])
     {
         try {
 
@@ -175,7 +175,7 @@ class PaypalSubscription
      * @return mixed|string
      */
 
-    public function createSubscription($data = [], $plan = [])
+    public static function createSubscription($data = [], $plan = [])
     {
         try {
 
@@ -200,7 +200,7 @@ class PaypalSubscription
      * @return mixed|string
      */
 
-    public function activeSubscription($id)
+    public static function activeSubscription($id)
     {
         try {
 
@@ -224,7 +224,7 @@ class PaypalSubscription
      * @return mixed|string
      */
 
-    public function cancelSubscription($id)
+    public static function cancelSubscription($id)
     {
         try {
 
@@ -248,7 +248,7 @@ class PaypalSubscription
      * @return mixed|string
      */
 
-    public function suspendSubscription($id)
+    public static function suspendSubscription($id)
     {
         try {
 
@@ -271,7 +271,7 @@ class PaypalSubscription
      * @return mixed|string
      */
 
-    public function getSubscription($id)
+    public static function getSubscription($id)
     {
         try {
 
@@ -283,6 +283,29 @@ class PaypalSubscription
 
             $response = $request->send();
             return self::$helper->parseJson($response->body);
+
+        } catch (\Exception $exception) {
+            return $exception->getMessage();
+        }
+    }
+
+    /**
+     * Method
+     * For create product and plan one time
+     * @param array $product
+     * @param array $plan
+     * @return mixed|string
+     */
+
+    public static function createPack($product = [], $plan = [])
+    {
+        try {
+
+            $dataProduct = self::createProduct($product);
+            $dataProduct = [
+                'product_id' => $dataProduct['id']
+            ];
+            return self::createPlan($plan, $dataProduct);
 
         } catch (\Exception $exception) {
             return $exception->getMessage();

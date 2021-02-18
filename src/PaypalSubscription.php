@@ -11,27 +11,29 @@ use Exception;
  * Class PayPalLM
  * @package leifermendez\paypal
  */
-class PaypalSubscription extends cURL
+class PaypalSubscription
 {
-    private $endpoint;
-    private $app_id;
-    private $app_sk;
-    private $mode;
-    private $headers;
-    private $helper;
-    private $token;
+    protected static $endpoint;
+    protected static $app_id;
+    protected static $app_sk;
+    protected static $headers;
+    protected static $helper;
+    protected static $token;
+    protected static $curl;
 
-    public function __construct($app_id, $app_sk, $mode = 'test')
+    public function __construct($app_id = null, $app_sk = null, $mode = null)
     {
         try {
-            $this->endpoint = ($mode === 'test') ? 'https://api-m.sandbox.paypal.com/v1' : 'https://api-m.paypal.com/v1';
-            $this->helper = new Helper();
-            $this->app_id = $app_id;
-            $this->app_sk = $app_sk;
-            $this->headers = [
+            self::$curl = new cURL();
+            $mode = $mode ?? env('PAYPAL_APP_MODE');
+            self::$helper = new Helper();
+            self::$endpoint = ($mode === 'test') ? 'https://api-m.sandbox.paypal.com/v1' : 'https://api-m.paypal.com/v1';
+            self::$app_id = $app_id ?? env('PAYPAL_APP_ID');
+            self::$app_sk = $app_sk ?? env('PAYPAL_APP_SK');
+            self::$headers = [
                 'User-Agent: PostmanRuntime/7.16.3',
             ];
-            $this->token = $this->getToken();
+            self::$token = $this->getToken();
 
         } catch (\Exception $exception) {
             return $exception->getMessage();
@@ -42,22 +44,21 @@ class PaypalSubscription extends cURL
      * Method for get Bearer token
      */
 
-    public function getToken()
+    public static function getToken()
     {
         try {
             $headers = [
                 'Content-Type: application/x-www-form-urlencoded'
             ];
-            $url = $this->endpoint . '/oauth2/token';
-
-            $request = cURL::newRequest('post', $url, ['grant_type' => 'client_credentials'])
+            $url = self::$endpoint . '/oauth2/token';
+            $request = self::$curl->newRequest('post', $url, ['grant_type' => 'client_credentials'])
                 ->setHeaders($headers)
-                ->setUser($this->app_id)
-                ->setPass($this->app_sk);
+                ->setUser(self::$app_id)
+                ->setPass(self::$app_sk);
 
             $response = $request->send();
 
-            return $this->helper->parseJson($response->body)['access_token'];
+            return self::$helper->parseJson($response->body)['access_token'];
 
         } catch (\Exception $exception) {
             return $exception->getMessage();
@@ -75,14 +76,14 @@ class PaypalSubscription extends cURL
     {
         try {
 
-            $url = $this->endpoint . '/catalogs/products?page_size=2&page=1&total_required=true';
+            $url = self::$endpoint . '/catalogs/products?page_size=2&page=1&total_required=true';
 
-            $request = cURL::newRequest('get', $url)
+            $request = self::$curl->newRequest('get', $url)
                 ->setHeader('Content-Type', 'application/json')
-                ->setHeader('Authorization', 'Bearer ' . $this->token);
+                ->setHeader('Authorization', 'Bearer ' . self::$token);
 
             $response = $request->send();
-            return $this->helper->parseJson($response->body);
+            return self::$helper->parseJson($response->body);
 
         } catch (\Exception $exception) {
             return $exception->getMessage();
@@ -102,14 +103,14 @@ class PaypalSubscription extends cURL
                 throw new Exception('PRODUCT_IS_EMPTY');
             }
 
-            $url = $this->endpoint . '/catalogs/products';
+            $url = self::$endpoint . '/catalogs/products';
 
-            $request = cURL::newJsonRequest('post', $url, $data)
+            $request = self::$curl->newJsonRequest('post', $url, $data)
                 ->setHeader('Content-Type', 'application/json')
-                ->setHeader('Authorization', 'Bearer ' . $this->token);
+                ->setHeader('Authorization', 'Bearer ' . self::$token);
 
             $response = $request->send();
-            return $this->helper->parseJson($response->body);
+            return self::$helper->parseJson($response->body);
 
         } catch (\Exception $exception) {
             return $exception->getMessage();
@@ -126,14 +127,14 @@ class PaypalSubscription extends cURL
     {
         try {
 
-            $url = $this->endpoint . '/billing/plans';
+            $url = self::$endpoint . '/billing/plans';
 
-            $request = cURL::newRequest('get', $url)
+            $request =self::$curl->newRequest('get', $url)
                 ->setHeader('Content-Type', 'application/json')
-                ->setHeader('Authorization', 'Bearer ' . $this->token);
+                ->setHeader('Authorization', 'Bearer ' . self::$token);
 
             $response = $request->send();
-            return $this->helper->parseJson($response->body);
+            return self::$helper->parseJson($response->body);
 
         } catch (\Exception $exception) {
             return $exception->getMessage();
@@ -152,14 +153,14 @@ class PaypalSubscription extends cURL
     {
         try {
 
-            $url = $this->endpoint . '/billing/plans';
+            $url = self::$endpoint . '/billing/plans';
             $data = array_merge($data, $product);
-            $request = cURL::newJsonRequest('post', $url, $data)
+            $request = self::$curl->newJsonRequest('post', $url, $data)
                 ->setHeader('Content-Type', 'application/json')
-                ->setHeader('Authorization', 'Bearer ' . $this->token);
+                ->setHeader('Authorization', 'Bearer ' . self::$token);
 
             $response = $request->send();
-            return $this->helper->parseJson($response->body);
+            return self::$helper->parseJson($response->body);
 
         } catch (\Exception $exception) {
             return $exception->getMessage();
@@ -178,14 +179,14 @@ class PaypalSubscription extends cURL
     {
         try {
 
-            $url = $this->endpoint . '/billing/subscriptions';
+            $url = self::$endpoint . '/billing/subscriptions';
             $data = array_merge($data, $plan);
-            $request = cURL::newJsonRequest('post', $url, $data)
+            $request = self::$curl->newJsonRequest('post', $url, $data)
                 ->setHeader('Content-Type', 'application/json')
-                ->setHeader('Authorization', 'Bearer ' . $this->token);
+                ->setHeader('Authorization', 'Bearer ' . self::$token);
 
             $response = $request->send();
-            return $this->helper->parseJson($response->body);
+            return self::$helper->parseJson($response->body);
 
         } catch (\Exception $exception) {
             return $exception->getMessage();
@@ -203,13 +204,13 @@ class PaypalSubscription extends cURL
     {
         try {
 
-            $url = $this->endpoint . '/billing/subscriptions/' . $id . '/activate';
-            $request = cURL::newRequest('post', $url)
+            $url = self::$endpoint . '/billing/subscriptions/' . $id . '/activate';
+            $request = self::$curl->newRequest('post', $url)
                 ->setHeader('Content-Type', 'application/json')
-                ->setHeader('Authorization', 'Bearer ' . $this->token);
+                ->setHeader('Authorization', 'Bearer ' . self::$token);
 
             $response = $request->send();
-            return $this->helper->parseJson($response->body);
+            return self::$helper->parseJson($response->body);
 
         } catch (\Exception $exception) {
             return $exception->getMessage();
@@ -227,13 +228,13 @@ class PaypalSubscription extends cURL
     {
         try {
 
-            $url = $this->endpoint . '/billing/subscriptions/' . $id . '/cancel';
-            $request = cURL::newRequest('post', $url)
+            $url = self::$endpoint . '/billing/subscriptions/' . $id . '/cancel';
+            $request = self::$curl->newRequest('post', $url)
                 ->setHeader('Content-Type', 'application/json')
-                ->setHeader('Authorization', 'Bearer ' . $this->token);
+                ->setHeader('Authorization', 'Bearer ' . self::$token);
 
             $response = $request->send();
-            return $this->helper->parseJson($response->body);
+            return self::$helper->parseJson($response->body);
 
         } catch (\Exception $exception) {
             return $exception->getMessage();
@@ -251,13 +252,13 @@ class PaypalSubscription extends cURL
     {
         try {
 
-            $url = $this->endpoint . '/billing/subscriptions/' . $id . '/suspend';
-            $request = cURL::newRequest('post', $url)
+            $url = self::$endpoint . '/billing/subscriptions/' . $id . '/suspend';
+            $request = self::$curl->newRequest('post', $url)
                 ->setHeader('Content-Type', 'application/json')
-                ->setHeader('Authorization', 'Bearer ' . $this->token);
+                ->setHeader('Authorization', 'Bearer ' . self::$token);
 
             $response = $request->send();
-            return $this->helper->parseJson($response->body);
+            return self::$helper->parseJson($response->body);
 
         } catch (\Exception $exception) {
             return $exception->getMessage();
@@ -274,14 +275,14 @@ class PaypalSubscription extends cURL
     {
         try {
 
-            $url = $this->endpoint . '/billing/subscriptions/' . $id;
+            $url = self::$endpoint . '/billing/subscriptions/' . $id;
 
-            $request = cURL::newRequest('get', $url)
+            $request = self::$curl->newRequest('get', $url)
                 ->setHeader('Content-Type', 'application/json')
-                ->setHeader('Authorization', 'Bearer ' . $this->token);
+                ->setHeader('Authorization', 'Bearer ' . self::$token);
 
             $response = $request->send();
-            return $this->helper->parseJson($response->body);
+            return self::$helper->parseJson($response->body);
 
         } catch (\Exception $exception) {
             return $exception->getMessage();

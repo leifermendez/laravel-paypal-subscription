@@ -10,8 +10,8 @@ class ServicePaypalSubscription
      * @param $mode
      * @return PaypalSubscription
      */
-    public function to($app_id, $app_sk, $mode)
+    public function to()
     {
-        return new PaypalSubscription($app_id, $app_sk, $mode);
+        return new PaypalSubscription();
     }
 }

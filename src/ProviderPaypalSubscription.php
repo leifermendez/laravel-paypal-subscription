@@ -11,10 +11,7 @@ class ProviderPaypalSubscription extends ServiceProvider
     public function register()
     {
         $this->app->singleton('PaypalSubscription', function () {
-            $app_id = env('PAYPAL_APP_ID');
-            $app_sk = env('PAYPAL_APP_SK');
-            $mode = env('PAYPAL_APP_MODE');
-            return new PaypalSubscription($app_id, $app_sk, $mode);
+            return new PaypalSubscription();
         }
         );
     }

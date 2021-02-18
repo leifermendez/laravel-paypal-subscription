@@ -4,7 +4,7 @@ namespace leifermendez\paypal;
 
 use Illuminate\Support\Facades\Facade;
 
-class PapyalSubscriptionFacade extends Facade
+class PaypalSubscriptionFacade extends Facade
 {
     /**
      * @return string

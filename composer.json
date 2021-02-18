@@ -24,7 +24,7 @@
                 "\\leifermendez\\paypal\\ProviderPaypalSubscription"
             ],
             "aliases": {
-                "PapyalSubscription": "\\leifermendez\\paypal\\PapyalSubscriptionFacade"
+                "PapyalSubscription": "\\leifermendez\\paypal\\PaypalSubscriptionFacade"
             }
         }
     }
